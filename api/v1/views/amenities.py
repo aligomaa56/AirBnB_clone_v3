@@ -6,19 +6,23 @@ from models import storage
 from models.amenity import Amenity
 
 
-@app_views.route('/amenities/', methods=['GET'])
+@app_views.route('/amenities/')
 def list_amenities():
     '''Retrieves a list of all Amenity objects'''
-    amenities = [amenity.to_dict() for amenity in storage.all("Amenity").values()]
+    amenities = []
+    for amenity in storage.all("Amenity").values():
+        amenities.append(amenity.to_dict())
     return jsonify(amenities)
 
-@app_views.route('/amenities/<amenity_id>', methods=['GET'])
+
+@app_views.route('/amenities/<amenity_id>')
 def get_amenity(amenity_id):
     '''Retrieves an Amenity object'''
     amenity = storage.get("Amenity", amenity_id)
     if not amenity:
         abort(404)
     return jsonify(amenity.to_dict())
+
 
 @app_views.route('/amenities/<amenity_id>', methods=['DELETE'])
 def delete_amenity(amenity_id):
@@ -29,6 +33,7 @@ def delete_amenity(amenity_id):
     storage.delete(amenity)
     storage.save()
     return jsonify({}), 200
+
 
 @app_views.route('/amenities/', methods=['POST'])
 def create_amenity():
@@ -42,6 +47,7 @@ def create_amenity():
     storage.new(new_amenity)
     storage.save()
     return jsonify(new_amenity.to_dict()), 201
+
 
 @app_views.route('/amenities/<amenity_id>', methods=['PUT'])
 def update_amenity(amenity_id):
